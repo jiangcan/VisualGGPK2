@@ -1,9 +1,9 @@
-﻿using System;
-using System.IO;
-using System.Linq;
-using System.Runtime.InteropServices;
+﻿namespace LibBundle {
+    using System;
+    using System.IO;
+    using System.Linq;
+    using System.Runtime.InteropServices;
 
-namespace LibBundle {
     public class BundleContainer {
         [DllImport("oo2core_9_win64.dll")]
         public static extern int OodleLZ_Decompress(byte[] buffer, int bufferSize, byte[] result, long outputBufferSize, int a, int b, int c, IntPtr d, long e, IntPtr f, IntPtr g, IntPtr h, long i, int ThreadModule);

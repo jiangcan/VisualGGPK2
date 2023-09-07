@@ -1,20 +1,21 @@
-﻿using LibDat2.Types;
-using System;
-using System.Collections.Generic;
-using System.Collections.ObjectModel;
-using System.Diagnostics;
-using System.Diagnostics.CodeAnalysis;
-using System.IO;
-using System.Linq;
-using System.Net.Http;
-using System.Reflection;
-using System.Text;
-using System.Text.Json;
-using System.Text.RegularExpressions;
-using System.Threading;
+﻿namespace LibDat2 {
+    using System;
+    using System.Collections.Generic;
+    using System.Collections.ObjectModel;
+    using System.Diagnostics;
+    using System.Diagnostics.CodeAnalysis;
+    using System.IO;
+    using System.Linq;
+    using System.Net;
+    using System.Net.Http;
+    using System.Reflection;
+    using System.Text;
+    using System.Text.Json;
+    using System.Text.RegularExpressions;
+    using System.Threading;
+    using LibDat2.Types;
 
-namespace LibDat2 {
-	public class DatContainer {
+    public class DatContainer {
 		/// <summary>
 		/// Structure definition of dat files
 		/// </summary>
@@ -34,11 +35,20 @@ namespace LibDat2 {
 		/// Download schema.min.json into <see cref="SchemaMinDatDefinitions"/>
 		/// </summary>
 		public static void DownloadSchemaMin() {
-			var http = new HttpClient() { Timeout = Timeout.InfiniteTimeSpan };
-			try {
+            var handler = new HttpClientHandler
+            {
+                UseProxy = true,
+                Proxy = WebRequest.GetSystemWebProxy(),
+                UseDefaultCredentials = true, // 如果需要使用当前用户的凭据，可以设置为 true
+            };
+            var http = new HttpClient(handler) { Timeout = Timeout.InfiniteTimeSpan };
+            try {
 				http.DefaultRequestHeaders.Add("User-Agent", "LibDat2");
-				var s = http.GetStringAsync("http://github.com/poe-tool-dev/dat-schema/releases/download/latest/schema.min.json").Result;
-				var json = JsonDocument.Parse(s);
+                var s = http
+                    .GetStringAsync(
+                        "https://github.com/poe-tool-dev/dat-schema/releases/download/latest/schema.min.json")
+                    .Result;
+                var json = JsonDocument.Parse(s);
 				var table = json.RootElement.GetProperty("tables");
 				SchemaMinDatDefinitions = new(table.GetArrayLength());
 				foreach (var dat in table.EnumerateArray()) {
